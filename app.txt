@@ -1,11 +1,6 @@
 Descargar NODE
-instalar npm
+npm install pm2 -g
 npm init -y
-instalar electron
-npm install electron --save-dev
-instalar base de datos 
+npm install express
 npm install better-sqlite3
 instalar db browser
-
-npm install --save-dev electron-rebuild
-npx electron-rebuild

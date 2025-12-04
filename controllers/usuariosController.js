@@ -27,3 +27,25 @@ exports.getUsuarioById = (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.loginUsuario = (req, res) => {
+    const { id, password } = req.body;
+
+  if (!id || !password) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  try {
+    const stmt = db.prepare('SELECT * FROM usuarios WHERE id = ? AND password = ?');
+    const user = stmt.get(id, password);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    }
+
+    res.json({ success: true, user });
+
+  } catch (err) {
+    console.error("ERROR SQL:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

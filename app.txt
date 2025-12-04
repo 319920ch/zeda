@@ -1,0 +1,11 @@
+Descargar NODE
+instalar npm
+npm init -y
+instalar electron
+npm install electron --save-dev
+instalar base de datos 
+npm install better-sqlite3
+instalar db browser
+
+npm install --save-dev electron-rebuild
+npx electron-rebuild

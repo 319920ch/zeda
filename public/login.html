@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Sistema de Inventario para productos ZEDA</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../styles/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/font-awesome/css/icons.css"> <!-- Aquí tu CSS personalizado -->
+
+    <!-- Add custom CSS here -->
+    <link href="../styles/css/stylish-portfolio.css" rel="stylesheet">
+    <link href="../styles/font-awesome/css/font-awesome.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <!-- login -->
+    <!-- Full Page Image Header Area -->
+    <div id="top" class="header">
+      <div class="vert-text">
+        <h1>INGRESO</h1>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    <form role="form">
+                        <div class="form-group input-group">
+                            <input type="text" class="form-control" placeholder="Username">
+                        </div>
+                        <div class="form-group input-group">
+                            <input type="text" class="form-control">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <a href="inicio.html" class="btn btn-default btn-lg">ENTRAR</a>
+      </div>
+    </div>
+
+    <!-- JavaScript
+    <script src="../styles/js/jquery-3.6.0.js"></script>
+    <script src="../styles/js/bootstrap.min.js"></script>  
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>-->
+<!-- JavaScript-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<!-- Bootstrap JS 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>-->
+
+<script>
+$(document).ready(function () {
+
+    // Cerrar menú lateral
+    $("#menu-close").click(function (e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Toggle menú
+    $("#menu-toggle").click(function (e) {
+        if ($(this).attr('href') === '#') {
+            e.preventDefault();
+            $("#sidebar-wrapper").toggleClass("active");
+        }
+    });
+
+    // Smooth scroll
+    $('a[href*=#]:not([href=#])').click(function () {
+        var target = $(this.hash);
+        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+
+        if (target.length) {
+            $('html,body').animate({
+                scrollTop: target.offset().top
+            }, 1000);
+            return false;
+        }
+    });
+
+});
+</script>
+
+    <script>
+      $(function() {
+        $('a[href*=#]:not([href=#])').click(function() {
+          if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') 
+            || location.hostname == this.hostname) {
+
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+            if (target.length) {
+              $('html,body').animate({
+                scrollTop: target.offset().top
+              }, 1000);
+              return false;
+            }
+          }
+        });
+      });
+    </script>
+
+  </body>
+
+</html>

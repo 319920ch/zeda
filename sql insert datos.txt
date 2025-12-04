@@ -1,0 +1,9 @@
+INSERT INTO ROLES (NOMBRE, DESCRIPCION)
+VALUES 
+('AdministradorSistema', 'Acceso total al sistema'),
+('Administrador', 'Gestiona inventarios');
+
+INSERT INTO USUARIOS (ID, NOMBRE, ROL_ID, FECHA_INGRESO, FECHA_SALIDA, ESTADO)
+VALUES
+('0604844324','Cristina Huisha', 1, '2025-12-03', NULL, 'ACTIVO'),
+('0502882533','Jonathan Moyano', 2, '2025-12-03', NULL, 'ACTIVO');

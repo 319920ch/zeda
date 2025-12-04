@@ -1,0 +1,68 @@
+/* ---------------------------
+   BASE MODERNA PARA ICONOS
+----------------------------*/
+
+/* Asegura que todos los iconos tengan un comportamiento limpio */
+.fa-solid, .fa-regular, .fa-brands {
+    font-size: 1em;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Tamaños equivalentes a FA4 */
+.fa-lg  { font-size: 1.25em; }
+.fa-2x  { font-size: 2em; }
+.fa-3x  { font-size: 3em; }
+.fa-4x  { font-size: 4em; }
+.fa-5x  { font-size: 5em; }
+
+/* Rotación moderna */
+.fa-rotate-90  { transform: rotate(90deg); }
+.fa-rotate-180 { transform: rotate(180deg); }
+.fa-rotate-270 { transform: rotate(270deg); }
+
+/* Animación equivalente a fa-spin */
+.fa-spin {
+    animation: fa-spin 1.5s infinite linear;
+}
+
+@keyframes fa-spin {
+    0%   { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ---------------------------
+   BOTONES DE ICONOS MODERNOS
+----------------------------*/
+
+/* Botón redondo básico */
+.icon-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+}
+
+/* Estados hover */
+.icon-btn:hover {
+    opacity: 0.85;
+    transform: scale(1.05);
+    transition: 0.2s ease;
+}
+
+/* ---------------------------
+   COLORES PARA REDES SOCIALES
+----------------------------*/
+
+.icon-facebook  { background: #1877f2; }
+.icon-instagram { background: #E1306C; }
+.icon-tiktok    { background: #000000; }
+.icon-twitter   { background: #000000; }
+
+/* 🔥 NUEVO: WHATSAPP */
+.icon-whatsapp  { background: #25D366; }

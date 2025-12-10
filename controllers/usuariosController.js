@@ -42,6 +42,8 @@ exports.loginUsuario = (req, res) => {
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     }
 
+    console.log('✅ Login exitoso para usuario:', id);
+    console.log('Datos del usuario:', user);
     res.json({ success: true, user });
 
   } catch (err) {

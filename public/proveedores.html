@@ -3,7 +3,7 @@
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Free Bootstrap Admin Template : Matrix</title>
+    <title>Proveedores ZEDA </title>
 	<!-- Bootstrap Styles-->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FontAwesome Styles-->
@@ -24,7 +24,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="inicio.html">Matrix</a>
+                <a class="navbar-brand" href="inicio.html">ZEDA</a>
             </div>
 
             <ul class="nav navbar-top-links navbar-right">
@@ -337,7 +337,7 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-			<footer><p>All right reserved. Template by: <a href="http://webthemez.com">WebThemez</a></p></footer>
+			<footer><p>Todos los derechos reservados ZEDA-CH</a></p></footer>
 			</div>
              <!-- /. PAGE INNER  -->
             </div>
@@ -346,6 +346,48 @@
      <!-- /. WRAPPER  -->
     <!-- JS Scripts-->
     <!-- jQuery Js -->
+        <!-- Edit Proveedor Modal -->
+        <div class="modal fade" id="editProveedorModal" tabindex="-1" role="dialog" aria-labelledby="editProveedorLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProveedorLabel">Editar Proveedor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditarProveedor">
+                            <input type="hidden" id="provId">
+                            <div class="form-group">
+                                <label for="provNombre">Nombre</label> 
+                                <input type="text" class="form-control" id="provNombre" placeholder="Nombre" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="provDireccion">Dirección</label>
+                                <input type="text" class="form-control" id="provDireccion" placeholder="Dirección">
+                            </div>
+                            <div class="form-group">
+                                <label for="provContacto">Contacto</label>
+                                <input type="text" class="form-control" id="provContacto" placeholder="Contacto">
+                            </div>
+                            <div class="form-group">
+                                <label for="provEstado">Estado</label>
+                                <select id="provEstado" class="form-control">
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnGuardarProveedor" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
       <!-- Bootstrap Js -->
     <script src="./assets/js/bootstrap.min.js"></script>

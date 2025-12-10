@@ -305,6 +305,9 @@
       console.log("Respuesta del servidor:", data);
 
       if (data.success) {
+        // Guardar usuario y rol en localStorage
+        localStorage.setItem('usuarioActual', JSON.stringify(data.user));
+        console.log('Usuario guardado en localStorage:', data.user);
         window.location.href = "/inicio.html";
       } else {
         alert(data.error || "Credenciales incorrectas");

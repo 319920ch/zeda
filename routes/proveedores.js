@@ -6,8 +6,4 @@ router.get('/', proveedoresController.getProveedores);
 router.post('/', proveedoresController.createProveedor);
 router.put('/:id', proveedoresController.updateProveedor);
 router.delete('/:id', proveedoresController.deleteProveedor);
-/*router.get('/:id', proveedoresController.getProveedorById);
-router.post('/login', proveedoresController.loginProveedor);
- router.post('/register', proveedoresController.registerProveedor);
-router.delete('/:id', usuariosController.deleteUsuario); */
 module.exports = router;

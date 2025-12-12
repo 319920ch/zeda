@@ -12,9 +12,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Importar rutas de la API
 const usuariosRoutes = require('./routes/usuarios');
 const proveedoresRoutes = require('./routes/proveedores');
+const materiaRoutes = require('./routes/materia');
 
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/materia', materiaRoutes);
 
 // Ruta por defecto → muestra landing (index.html)
 app.get('/', (req, res) => {

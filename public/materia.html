@@ -3,7 +3,7 @@
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proveedores ZEDA </title>
+    <title>Materia Prima ZEDA</title>
 	<!-- Bootstrap Styles-->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FontAwesome Styles-->
@@ -12,7 +12,6 @@
     <link href="./assets/css/custom-styles.css" rel="stylesheet" />
      <!-- Google Fonts-->
    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-   <link href="./assets/js/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
 </head>
 <body>
     <div id="wrapper">
@@ -24,11 +23,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="inicio.html">ZEDA</a>
+                <a class="navbar-brand" href="inicio.html">Matrix</a>
             </div>
 
             <ul class="nav navbar-top-links navbar-right">
-                
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -56,7 +54,7 @@
                         <a href="inicio.html"><i class="fa fa-dashboard"></i> Inventario</a>
                     </li>
                     <li>
-                        <a href="materia.html"><i class="fa fa-desktop"></i> Materia Prima</a>
+                        <a href="materia.html" class="active-menu"><i class="fa fa-desktop"></i> Materia Prima</a>
                     </li>
 					<li>
                         <a href="productos.html" ><i class="fa fa-bar-chart-o"></i> Productos</a>
@@ -69,8 +67,9 @@
                         <a href="costos.html"><i class="fa fa-table"></i> Costos</a>
                     </li>
                     <li>
-                        <a href="proveedores.html" class="active-menu"><i class="fa fa-edit"></i> Proveedores </a>
+                        <a href="proveedores.html"><i class="fa fa-edit"></i> Proveedores </a>
                     </li>
+
 
                     <li>
                         <a href="#"><i class="fa fa-sitemap"></i> Reportes<span class="fa arrow"></span></a>
@@ -107,13 +106,14 @@
             </div>
 
         </nav>
+
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper" >
             <div id="page-inner">
 			 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Proveedores <small>Registrados</small>
+                            Materia Prima <small>Registrada</small>
                         </h1>
                     </div>
                 </div> 
@@ -124,20 +124,21 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <div style="margin-top:-4.5px; float:right;">
-                                <a class="btn btn-info btn-sm" onclick="abrirModalAgregarProveedor()">Agregar</a>
+                                <a class="btn btn-info btn-sm" onclick="abrirModalAgregarMateria()">Agregar</a>
                             </div>
-                            Datos de proveedores
+                            Materia Prima
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="tablaProveedores">
+                                <table class="table table-striped table-bordered table-hover" id="tablaMateria">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
-                                            <th>Dirección</th>
-                                            <th>Contacto</th>
+                                            <th>Descripción</th>
+                                            <th>Proveedor</th>
                                             <th>Estado</th>
                                             <th>Registrado</th>
+                                            <th>Modificado por</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -154,34 +155,36 @@
              <!-- /. PAGE INNER  -->
             </div>
          <!-- /. PAGE WRAPPER  -->
+
+        
         </div>
      <!-- /. WRAPPER  -->
     <!-- JS Scripts-->
     <!-- jQuery Js -->
-        <!-- Edit Proveedor Modal -->
-        <div class="modal fade" id="editProveedorModal" tabindex="-1" role="dialog" aria-labelledby="editProveedorLabel" aria-hidden="true">
+     <!-- Edit Materia Modal -->
+        <div class="modal fade" id="editMateriaModal" tabindex="-1" role="dialog" aria-labelledby="editMateriaLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editProveedorLabel">Editar Proveedor</h5>
+                        <h5 class="modal-title" id="editMateriaLabel">Editar Materia</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="formEditarProveedor">
+                        <form id="formEditarMateria">
                             <input type="hidden" id="provId">
                             <div class="form-group">
                                 <label for="provNombre">Nombre</label> 
                                 <input type="text" class="form-control" id="provNombre" placeholder="Nombre" disabled>
                             </div>
                             <div class="form-group">
-                                <label for="provDireccion">Dirección</label>
-                                <input type="text" class="form-control" id="provDireccion" placeholder="Dirección">
+                                <label for="provDescripcion">Descripción</label>
+                                <input type="text" class="form-control" id="provDescripcion" placeholder="Descripción">
                             </div>
                             <div class="form-group">
-                                <label for="provContacto">Contacto</label>
-                                <input type="text" class="form-control" id="provContacto" placeholder="Contacto">
+                                <label for="provProveedor">Proveedor</label>
+                                <input type="text" class="form-control" id="provProveedor" placeholder="Proveedor">
                             </div>
                             <div class="form-group">
                                 <label for="provEstado">Estado</label>
@@ -194,35 +197,35 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnGuardarProveedor" class="btn btn-success btn">Guardar cambios</button>
+                        <button type="button" id="btnGuardarMateria" class="btn btn-success btn">Guardar cambios</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Add Proveedor Modal -->
-        <div class="modal fade" id="addProveedorModal" tabindex="-1" role="dialog" aria-labelledby="addProveedorLabel" aria-hidden="true">
+        <!-- Add Materia Modal -->
+        <div class="modal fade" id="addMateriaModal" tabindex="-1" role="dialog" aria-labelledby="addMateriaLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addProveedorLabel">Agregar Proveedor</h5>
+                        <h5 class="modal-title" id="addMateriaLabel">Agregar Materia</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="formAgregarProveedor">
+                        <form id="formAgregarMateria">
                             <div class="form-group">
                                 <label for="addNombre">Nombre</label> 
                                 <input type="text" class="form-control" id="addNombre" placeholder="Nombre">
                             </div>
                             <div class="form-group">
-                                <label for="addDireccion">Dirección</label>
-                                <input type="text" class="form-control" id="addDireccion" placeholder="Dirección">
+                                <label for="addDescripcion">Descripción</label>
+                                <input type="text" class="form-control" id="addDescripcion" placeholder="Descripción">
                             </div>
                             <div class="form-group">
-                                <label for="addContacto">Contacto</label>
-                                <input type="text" class="form-control" id="addContacto" placeholder="Contacto">
+                                <label for="addProveedor">Proveedor</label>
+                                <input type="text" class="form-control" id="addProveedor" placeholder="Proveedor">
                             </div>
                             <div class="form-group">
                                 <label for="addEstado">Estado</label>
@@ -235,25 +238,23 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnAgregarProveedor" class="btn btn-success">Agregar</button>
+                        <button type="button" id="btnAgregarMateria" class="btn btn-success">Agregar</button>
                     </div>
                 </div>
             </div>
         </div>
 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-      <!-- Bootstrap Js -->
+    <!-- Bootstrap Js -->
     <script src="./assets/js/bootstrap.min.js"></script>
     <!-- Metis Menu Js -->
-    <script src="./assets/js/jquery.metisMenu.js"></script>
+    <script src="./assets/js/jquery.metismenu.js"></script>
      <!-- DATA TABLE SCRIPTS -->
     <script src="./assets/js/dataTables/jquery.dataTables.js"></script>
     <script src="./assets/js/dataTables/dataTables.bootstrap.js"></script>
-         <!-- Custom Js -->
+    <!-- Custom Js -->
     <script src="./assets/js/custom-scripts.js"></script>
-    <script src="./js/proveedores.js"></script>
-
-    
-   
+    <script src="./js/materia.js"></script>
+ 
 </body>
 </html>

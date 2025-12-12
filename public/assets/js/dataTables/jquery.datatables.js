@@ -10813,7 +10813,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sSearch": "Buscar:",
+			"sSearch": "Buscar:  ",
 	
 	
 			/**

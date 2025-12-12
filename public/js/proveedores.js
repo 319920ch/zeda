@@ -83,7 +83,7 @@ function cargarProveedores() {
                   <td>${p.CONTACTO}</td>
                   <td>${p.ESTADO}</td>
                   <td>${p.FECHA_REGISTRO}</td>
-                  <td>
+                  <td style="text-align: left;">
                     <button class="btn btn-warning btn-sm" onclick="editarProveedor(${p.ID})">Editar</button>
                     ${canDelete ? `<button class="btn btn-danger btn-sm" style="margin-left:6px;" onclick="eliminarProveedorById(${p.ID})">Eliminar</button>` : ''}
                   </td>
@@ -281,3 +281,90 @@ function eliminarProveedor() {
   const id = document.querySelector('#provId') ? document.querySelector('#provId').value : null;
   if (id) eliminarProveedorById(id);
 }
+
+// Abre el modal para agregar un nuevo proveedor
+function abrirModalAgregarProveedor() {
+ 
+  // Limpiar campos del modal
+  document.querySelector('#addNombre').value = '';
+  document.querySelector('#addDireccion').value = '';
+  document.querySelector('#addContacto').value = '';
+  document.querySelector('#addEstado').value = 'Activo';
+  
+  // Mostrar modal
+  if (typeof $ === 'function' && $.fn && $.fn.modal) {
+    $('#addProveedorModal').modal('show');
+  } else {
+    console.warn('Bootstrap modal no disponible.');
+  }
+}
+
+// Guardar nuevo proveedor
+function agregarProveedor() {
+  const nombre = document.querySelector('#addNombre').value;
+  const direccion = document.querySelector('#addDireccion').value;
+  const contacto = document.querySelector('#addContacto').value;
+  const estado = document.querySelector('#addEstado').value;
+  
+  // Validar campos
+  if (!nombre || !direccion || !contacto) {
+    alert('Por favor, completa todos los campos');
+    return;
+  }
+  
+  // Generar timestamp en formato YYYY-MM-DD HH:MM:SS
+  const now = new Date();
+  const año = now.getFullYear();
+  const mes = String(now.getMonth() + 1).padStart(2, '0');
+  const dia = String(now.getDate()).padStart(2, '0');
+  const horas = String(now.getHours()).padStart(2, '0');
+  const minutos = String(now.getMinutes()).padStart(2, '0');
+  const segundos = String(now.getSeconds()).padStart(2, '0');
+  const timestamp = `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+  
+  // Preparar datos para enviar
+  const datosProveedor = {
+    NOMBRE: nombre,
+    DIRECCION: direccion,
+    CONTACTO: contacto,
+    ESTADO: estado,
+    FECHA_REGISTRO: timestamp
+  };
+  
+  // Enviar al servidor
+  fetch('http://localhost:3000/api/proveedores', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(datosProveedor)
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    alert('Proveedor agregado correctamente');
+    
+    // Cerrar modal
+    $('#addProveedorModal').modal('hide');
+    
+    // Recargar página después de 500ms
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  })
+  .catch(err => {
+    alert('Error al agregar proveedor: ' + err.message);
+  });
+}
+
+// Evento del botón agregar
+document.addEventListener("DOMContentLoaded", function() {
+  const btnAgregar = document.querySelector('#btnAgregarProveedor');
+  if (btnAgregar) {
+    btnAgregar.addEventListener('click', agregarProveedor);
+  }
+});

@@ -12,6 +12,15 @@
     <link href="./assets/css/custom-styles.css" rel="stylesheet" />
      <!-- Google Fonts-->
    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+   <style>
+     /* Limitar tamaño de la columna descripción en la tabla */
+     #tablaMateria td:nth-child(2) {
+       max-width: 250px;
+       word-wrap: break-word;
+       overflow-wrap: break-word;
+       white-space: normal;
+     }
+   </style>
 </head>
 <body>
     <div id="wrapper">
@@ -23,7 +32,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="inicio.html">Matrix</a>
+                <a class="navbar-brand" href="inicio.html">ZEDA</a>
             </div>
 
             <ul class="nav navbar-top-links navbar-right">
@@ -184,7 +193,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="provProveedor">Proveedor</label>
-                                <input type="text" class="form-control" id="provProveedor" placeholder="Proveedor">
+                                <select id="provProveedor" class="form-control" disabled>
+                                    <option value="">-- Seleccionar Proveedor --</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="provEstado">Estado</label>
@@ -225,7 +236,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="addProveedor">Proveedor</label>
-                                <input type="text" class="form-control" id="addProveedor" placeholder="Proveedor">
+                                <select id="addProveedor" class="form-control">
+                                    <option value="">-- Seleccionar Proveedor --</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="addEstado">Estado</label>

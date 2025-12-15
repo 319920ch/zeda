@@ -19,16 +19,33 @@ exports.getMateria = (req, res) => {
   }
 };
 
+exports.getMateriaById = (req, res) => {
+  try {
+    // Seleccionamos la materia junto con el nombre del proveedor y el nombre del usuario (si existen)
+    const stmt = db.prepare(`
+      SELECT m.*, pr.NOMBRE AS PROVEEDOR_NOMBRE, u.NOMBRE AS USUARIO_NOMBRE
+      FROM MATERIA m
+      LEFT JOIN proveedores pr ON m.PROVEEDOR_ID = pr.ID
+      LEFT JOIN usuarios u ON m.USUARIO_ULT_MOD = u.ID
+      WHERE ID = ?
+    `);
+    const materia = stmt.all(req.params.id);
+    res.json(materia);
+  } catch (err) {
+    console.error('Error getMateria:', err.message); // log de error
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 exports.createMateria = (req, res) => {
   const { NOMBRE, DESCRIPCION, PROVEEDOR_ID, ESTADO, FECHA_REGISTRO, USUARIO_ULT_MOD } = req.body;
-  console.log('createMateria llamado', { NOMBRE, DESCRIPCION, PROVEEDOR_ID, ESTADO, FECHA_REGISTRO });
   try {
     const stmt = db.prepare(`
       INSERT INTO MATERIA (NOMBRE, DESCRIPCION, PROVEEDOR_ID, ESTADO, FECHA_REGISTRO, USUARIO_ULT_MOD)
       VALUES (?, ?, ?, ?, ?, ?)
     `);
     const result = stmt.run(NOMBRE, DESCRIPCION, PROVEEDOR_ID, ESTADO, FECHA_REGISTRO, USUARIO_ULT_MOD || null);
-    console.log('Materia insertada, id:', result.lastInsertRowid);
     res.json({ 
       message: 'Materia creada correctamente',
       id: result.lastInsertRowid,

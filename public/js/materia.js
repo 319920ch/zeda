@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         break;
                     }
                 }
-                
                 // Si encontramos la fila, navegar a su página
                 if (rowIndex >= 0) {
                     const pageLength = datatable.page.len();
@@ -56,8 +55,7 @@ window.currentUserRoleId = (function(){
 })();
 
 function cargarMateria() {
-    console.log("🔄 Iniciando carga de materia prima...");
-    
+   
     fetch("http://localhost:3000/api/materia")
         .then(res => {
             return res.json();
@@ -108,11 +106,11 @@ function cargarMateria() {
 }
 
 
-// Abre el modal de edición y rellena los campos con los datos del proveedor
+// Abre el modal de edición y rellena los campos con los datos de la materia
 function editarMateria(id) {
-  const prov = (window.materiaData || []).find(p => p.ID == id);
-  if (!prov) {
-    console.error('Materia no encontrado:', id);
+  const materia = (window.materiaData || []).find(p => p.ID == id);
+  if (!materia) {
+    console.error('❌ Materia no encontrada:', id);
     return;
   }
 
@@ -122,11 +120,36 @@ function editarMateria(id) {
     if (el) el.value = value || '';
   };
 
-  setVal('#provId', prov.ID);
-  setVal('#provNombre', prov.NOMBRE);
-  setVal('#provDescripcion', prov.DESCRIPCION);
-  setVal('#provProveedor', prov.PROVEEDOR_ID);
-  setVal('#provEstado', prov.ESTADO);
+  setVal('#provId', materia.ID);
+  setVal('#provNombre', materia.NOMBRE);
+  setVal('#provDescripcion', materia.DESCRIPCION);
+  setVal('#provEstado', materia.ESTADO);
+
+  // Cargar proveedores en el select
+  const selectProveedor = document.querySelector('#provProveedor');
+  if (selectProveedor) {
+    fetch('http://localhost:3000/api/proveedores')
+      .then(res => res.json())
+      .then(proveedores => {
+        // Limpiar opciones previas
+        selectProveedor.innerHTML = '<option value="">-- Seleccionar Proveedor --</option>';
+        
+        // Agregar opciones de proveedores
+        proveedores.forEach(prov => {
+          const option = document.createElement('option');
+          option.value = prov.ID;
+          option.textContent = prov.NOMBRE;
+          // Seleccionar el proveedor actual
+          if (prov.ID == materia.PROVEEDOR_ID) {
+            option.selected = true;
+          }
+          selectProveedor.appendChild(option);
+        });
+      })
+      .catch(err => {
+        console.error('❌ Error al cargar proveedores:', err);
+      });
+  }
 
   // Verificar rol del usuario para mostrar/ocultar botón eliminar
   const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
@@ -139,7 +162,6 @@ function editarMateria(id) {
     const k = Object.keys(obj).find(key => key && key.toString().toLowerCase() === lower);
     return k ? obj[k] : undefined;
   };
-
   const rawRol = (
     usuarioActual.rol_id ?? usuarioActual.ROL_ID ?? usuarioActual.ROLE_ID ?? usuarioActual.rol ?? usuarioActual.ROLE ?? usuarioActual.ROL ??
     findKeyCI(usuarioActual, 'rol_id') ?? findKeyCI(usuarioActual, 'role_id') ?? findKeyCI(usuarioActual, 'rol')
@@ -166,15 +188,117 @@ function editarMateria(id) {
 }
 
 
-// Guardar cambios del proveedor
+// Guardar cambios de la materia
 function guardarMateria() {
+
+  // 0. OBTENER DATOS DEL USUARIO LOGUEADO
+  let usuarioId = null;
+  let usuarioNombre = 'Desconocido';
+  try {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+    usuarioId = usuarioActual.id ?? usuarioActual.ID ?? usuarioActual.USUARIOS_ID ?? null;
+    usuarioNombre = usuarioActual.nombre ?? usuarioActual.NOMBRE ?? usuarioActual.USUARIOS_NOMBRE ?? 'Desconocido';
+  } catch (e) {
+    console.error('❌ Error al obtener datos del usuario:', e.message);
+  }
+
+  // 1. OBTENER DATOS ACTUALES DEL MODAL
+  const form = document.querySelector('#formEditarMateria');
+  const formElements = form ? Array.from(form.elements) : [];
+
+  // 2. ANALIZAR CAMPOS DESHABILITADOS
+
+  const disabledFields = [];
+  formElements.forEach(el => {
+    if (el.id) {
+      const isDisabled = el.disabled;
+      const isHiddenInput = el.type === 'hidden';
+      if (isDisabled && !isHiddenInput) {
+        disabledFields.push({
+          id: el.id,
+          name: el.name,
+          value: el.value,
+          type: el.type,
+          tagName: el.tagName
+        });
+      }
+    }
+  });
+  
+  // 3. OBTENER VALORES ACTUALES
   const id = document.querySelector('#provId').value;
   const nombre = document.querySelector('#provNombre').value;
   const descripcion = document.querySelector('#provDescripcion').value;
-  const proveedor = document.querySelector('#provProveedor').value;
+  const proveedorId = document.querySelector('#provProveedor').value;
   const estado = document.querySelector('#provEstado').value;
   
-  // Generar timestamp en formato YYYY-MM-DD HH:MM:SS
+  const nombreDisabled = document.querySelector('#provNombre').disabled;
+  const proveedorDisabled = document.querySelector('#provProveedor').disabled;
+
+  // 4. DETECTAR CAMBIOS (comparar con datos originales)
+  const materiaOriginal = (window.materiaData || []).find(p => p.ID == id);
+  const camposModificados = [];
+  
+  if (materiaOriginal) {
+    // Comparar descripción (solo si es editable)
+    if (!nombreDisabled && descripcion !== (materiaOriginal.DESCRIPCION || '')) {
+      camposModificados.push({
+        campo: 'DESCRIPCION',
+        valorOriginal: materiaOriginal.DESCRIPCION,
+        valorNuevo: descripcion,
+        modificado: true
+      });
+    }
+    
+    // Comparar estado (siempre es editable)
+    if (estado !== (materiaOriginal.ESTADO || '')) {
+      camposModificados.push({
+        campo: 'ESTADO',
+        valorOriginal: materiaOriginal.ESTADO,
+        valorNuevo: estado,
+        modificado: true
+      });
+    }
+    
+    // Comparar proveedor (solo si es editable)
+    if (!proveedorDisabled && proveedorId !== (materiaOriginal.PROVEEDOR_ID || '')) {
+      camposModificados.push({
+        campo: 'PROVEEDOR_ID',
+        valorOriginal: materiaOriginal.PROVEEDOR_ID,
+        valorNuevo: proveedorId,
+        modificado: true
+      });
+    }
+    // Proveedor NO se modifica (está deshabilitado)
+    if (proveedorDisabled) {
+      console.log(`   🔒 PROVEEDOR_ID no se envía (campo deshabilitado): "${proveedorId}"`);
+    }
+  } else {
+    console.log('   ⚠️ No se encontró materia original para comparación');
+  }
+
+
+  // 5. VALIDAR CAMPOS OBLIGATORIOS (SOLO CAMPOS EDITABLES)
+  let validationError = '';
+  
+  if (!nombre) {
+    validationError += 'Nombre está vacío. ';
+  }
+  if (!descripcion) {
+    validationError += 'Descripción está vacía. ';
+  }
+  
+  if (validationError) {
+    console.warn('⚠️ ' + validationError + '- No se puede guardar');
+    alert('Por favor, completa todos los campos requeridos:\n' + validationError);
+    return;
+  }
+  
+
+  // Guardar ID del registro para reposicionar después de recargar
+  localStorage.setItem('materiaParaRecargar', id);
+
+  // 6. GENERAR TIMESTAMP
   const now = new Date();
   const año = now.getFullYear();
   const mes = String(now.getMonth() + 1).padStart(2, '0');
@@ -184,34 +308,28 @@ function guardarMateria() {
   const segundos = String(now.getSeconds()).padStart(2, '0');
   const timestamp = `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
 
-  // Validar campos
-  if (!nombre || !direccion || !contacto) {
-    alert('Por favor, completa todos los campos');
-    return;
-  }
+  // 7. PREPARAR DATOS PARA ENVIAR
+  // Nota: Aunque NOMBRE y PROVEEDOR están deshabilitados en el frontend,
+  // se envían porque la BD los requiere (NOT NULL constraint)
+  const datos = {
+    NOMBRE: nombre,
+    DESCRIPCION: descripcion,
+    PROVEEDOR_ID: proveedorId ? parseInt(proveedorId) : null,
+    ESTADO: estado,
+    FECHA_REGISTRO: timestamp, 
+    USUARIO_ULT_MOD: usuarioId
+  };
+  
 
-  // Guardar ID del registro para reposicionar después de recargar
-  localStorage.setItem('proveedorParaRecargar', id);
-
-  // Enviar cambios al servidor
+  // 8. ENVIAR CAMBIOS AL SERVIDOR
   fetch(`http://localhost:3000/api/materia/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      NOMBRE: nombre,
-      DESCRIPCION: descripcion,
-      PROVEEDOR_ID: proveedor,
-      ESTADO: estado,
-      FECHA_REGISTRO: timestamp, 
-      UUSUARIO_ULT_MOD: 'UsuarioActual' 
-    })
-     
+    body: JSON.stringify(datos)
   })
-  
   .then(res => {
-    console.log(timestamp);
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
@@ -244,16 +362,23 @@ document.addEventListener("DOMContentLoaded", function() {
 // Función para eliminar materia
 // Eliminar materia por ID (usado desde el botón en la fila)
 function eliminarMateriaById(id) {
-  const prov = (window.proveedoresData || []).find(p => p.ID == id) || {};
-  const nombre = prov.NOMBRE || '';
+  // Buscar la materia en los datos cargados (no en proveedores)
+  const materia = (window.materiaData || []).find(m => m.ID == id) || {};
+  const nombre = materia.NOMBRE || '';
+
+  // Validar id
+  if (!id) {
+    console.warn('ID inválido para eliminar materia:', id);
+    return;
+  }
 
   // Confirmar eliminación
-  const confirmacion = confirm(`¿Estás seguro de que deseas eliminar a "${nombre}"? Esta acción no se puede deshacer.`);
+  const confirmacion = confirm(`¿Estás seguro de que deseas eliminar la materia "${nombre}"? Esta acción no se puede deshacer.`);
   if (!confirmacion) return;
 
-  console.log('🗑️ Eliminando materia ID:', id);
+  console.log('🗑️ Eliminando materia ID:', id, ' Nombre:', nombre);
 
-  fetch(`http://localhost:3000/api/proveedores/${id}`, {
+  fetch(`http://localhost:3000/api/materia/${id}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -262,18 +387,19 @@ function eliminarMateriaById(id) {
     return res.json();
   })
   .then(data => {
-    console.log('Materia eliminada:', data);
+    console.log('Materia eliminada (response):', data);
     alert('Materia eliminada correctamente');
-    
+
     // Limpiar localStorage (ya que el registro no existe)
     localStorage.removeItem('materiaParaRecargar');
-    
+
     // Recargar página completa después de 500ms
     setTimeout(() => {
       location.reload();
     }, 500);
   })
   .catch(err => {
+    console.error('Error al eliminar materia:', err);
     alert('Error al eliminar materia: ' + err.message);
   });
 }
@@ -286,13 +412,32 @@ function eliminarMateria() {
 
 // Abre el modal para agregar un nuevo proveedor
 function abrirModalAgregarMateria() {
- 
   // Limpiar campos del modal
   document.querySelector('#addNombre').value = '';
   document.querySelector('#addDescripcion').value = '';
-  document.querySelector('#addProveedor').value = '';
   document.querySelector('#addEstado').value = 'Activo';
-  
+
+  // Poblar select de proveedores activos
+  const select = document.querySelector('#addProveedor');
+  if (select) {
+    select.innerHTML = '<option value="">-- Seleccionar Proveedor --</option>';
+    fetch('http://localhost:3000/api/proveedores')
+      .then(res => res.json())
+      .then(proveedores => {
+        proveedores
+          .filter(p => (p.ESTADO || p.estado || '').toString().toLowerCase() === 'activo')
+          .forEach(prov => {
+            const option = document.createElement('option');
+            option.value = prov.ID;
+            option.textContent = prov.NOMBRE || prov.nombre || '';
+            select.appendChild(option);
+          });
+      })
+      .catch(err => {
+        console.error('❌ Error al cargar proveedores para el modal agregar:', err);
+      });
+  }
+
   // Mostrar modal
   if (typeof $ === 'function' && $.fn && $.fn.modal) {
     $('#addMateriaModal').modal('show');
@@ -305,15 +450,24 @@ function abrirModalAgregarMateria() {
 function agregarMateria() {
   const nombre = document.querySelector('#addNombre').value;
   const descripcion = document.querySelector('#addDescripcion').value;
-  const proveedor = document.querySelector('#addProveedor').value;
+  const proveedorId = document.querySelector('#addProveedor').value;
   const estado = document.querySelector('#addEstado').value;
-  
+
   // Validar campos
-  if (!nombre || !descripcion || !proveedor) {
+  if (!nombre || !descripcion || !proveedorId) {
     alert('Por favor, completa todos los campos');
     return;
   }
-  
+
+  // Obtener ID de usuario logueado
+  let usuarioId = null;
+  try {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+    usuarioId = usuarioActual.id ?? usuarioActual.ID ?? usuarioActual.USUARIOS_ID ?? null;
+  } catch (e) {
+    console.error('❌ Error al obtener usuario del localStorage:', e);
+  }
+
   // Generar timestamp en formato YYYY-MM-DD HH:MM:SS
   const now = new Date();
   const año = now.getFullYear();
@@ -323,19 +477,21 @@ function agregarMateria() {
   const minutos = String(now.getMinutes()).padStart(2, '0');
   const segundos = String(now.getSeconds()).padStart(2, '0');
   const timestamp = `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
-  
-  // Preparar datos para enviar
-  const datosProveedor = {
+
+  // Preparar datos para enviar (enviar PROVEEDOR_ID, no nombre)
+  const datosMateria = {
     NOMBRE: nombre,
     DESCRIPCION: descripcion,
-    PROVEEDOR: proveedor,
+    PROVEEDOR_ID: proveedorId ? parseInt(proveedorId) : null,
     ESTADO: estado,
     FECHA_REGISTRO: timestamp,
-    UUSUARIO_ULT_MOD: 'UsuarioActual'
+    USUARIO_ULT_MOD: usuarioId
   };
-  
-  // Enviar al servidor
-  fetch('http://localhost:3000/api/proveedores', {
+
+  console.log('📦 Enviando nueva materia:', datosMateria);
+
+  // Enviar al servidor (endpoint materia)
+  fetch('http://localhost:3000/api/materia', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -350,16 +506,17 @@ function agregarMateria() {
   })
   .then(data => {
     alert('Materia agregada correctamente');
-    
+
     // Cerrar modal
     $('#addMateriaModal').modal('hide');
-    
+
     // Recargar página después de 500ms
     setTimeout(() => {
       location.reload();
     }, 500);
   })
   .catch(err => {
+    console.error('Error al agregar materia:', err);
     alert('Error al agregar materia: ' + err.message);
   });
 }

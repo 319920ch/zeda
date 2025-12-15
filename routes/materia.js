@@ -3,6 +3,7 @@ const router = express.Router();
 const materiaController = require('../controllers/materiaController');
 
 router.get('/', materiaController.getMateria);
+router.get('/', materiaController.getMateriaById);
 router.post('/', materiaController.createMateria);
 router.put('/:id', materiaController.updateMateria);
 router.delete('/:id', materiaController.deleteMateria);

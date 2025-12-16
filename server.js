@@ -13,10 +13,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 const usuariosRoutes = require('./routes/usuarios');
 const proveedoresRoutes = require('./routes/proveedores');
 const materiaRoutes = require('./routes/materia');
+const productosRoutes = require('./routes/productos');
 
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/materia', materiaRoutes);
+app.use('/api/productos', productosRoutes);
 
 // Ruta por defecto → muestra landing (index.html)
 app.get('/', (req, res) => {

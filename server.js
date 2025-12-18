@@ -15,12 +15,14 @@ const proveedoresRoutes = require('./routes/proveedores');
 const materiaRoutes = require('./routes/materia');
 const productosRoutes = require('./routes/productos');
 const presentacionesRoutes = require('./routes/presentaciones');
+const materiaProductoRoutes = require('./routes/materiaProducto');
 
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/materia', materiaRoutes);
 app.use('/api/productos', productosRoutes);
 app.use('/api/presentaciones', presentacionesRoutes);
+app.use('/api/materiaProducto', materiaProductoRoutes);
 
 // Ruta por defecto → muestra landing (index.html)
 app.get('/', (req, res) => {

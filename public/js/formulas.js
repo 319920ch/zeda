@@ -224,21 +224,6 @@ function validarPaso2() {
         !producto || !presentacion;
 }
 
-function calcularIvaFila(tr) {
-
-    const costoU = parseFloat(tr.querySelector('.costo_u').value) || 0;
-    const porcentaje = parseFloat(tr.querySelector('.porcentaje').value) || 0;
-    const iva = parseFloat(tr.querySelector('.iva').value) || 0;
-
-    const costoTanque = costoU * porcentaje;
-    const costoUIva = costoU + (costoU * iva / 100);
-    const costoTanqueIva = costoTanque + (costoT * iva / 100);
-
-    tr.querySelector('.costo_tanque').value = costoTanque.toFixed(2);
-    tr.querySelector('.costo_u_iva').value = costoUIva.toFixed(2);
-    tr.querySelector('.costo_tanque_iva').value = costoTanqueIva.toFixed(2);
-}
-
 document
     .getElementById('tablaMaterias')
     .addEventListener('input', e => {
@@ -254,6 +239,20 @@ document
             calcularIvaFila(tr);
         }
     });
+function calcularIvaFila(tr) {
+
+    const costoU = parseFloat(tr.querySelector('.costo_u').value) || 0;
+    const porcentaje = parseFloat(tr.querySelector('.porcentaje').value) || 0;
+    const iva = parseFloat(tr.querySelector('.iva').value) || 0;
+
+    const costoTanque = costoU * porcentaje;
+    const costoUIva = costoU + (costoU * iva / 100);
+    const costoTanqueIva = costoTanque + (costoTanque * iva / 100);
+
+    tr.querySelector('.costo_tanque').value = costoTanque.toFixed(2);
+    tr.querySelector('.costo_u_iva').value = costoUIva.toFixed(2);
+    tr.querySelector('.costo_tanque_iva').value = costoTanqueIva.toFixed(2);
+}
 
 async function cargarMaterias() {
 
@@ -307,7 +306,8 @@ function agregarMateriaTabla() {
             <td><input type="number" class="form-control input-sm iva"></td>
 
             <td><input type="number" class="form-control input-sm costo_u" ></td>
-            <td><input type="number" class="form-control input-sm costo_u_iva" readonly></td>            <td><input type="number" class="form-control input-sm costo_tanque"></td>
+            <td><input type="number" class="form-control input-sm costo_u_iva" readonly></td>            
+            <td><input type="number" class="form-control input-sm costo_tanque" readonly></td>
             <td><input type="number" class="form-control input-sm costo_tanque_iva" readonly></td>
 
             <td>

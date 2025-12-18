@@ -81,6 +81,9 @@ async function cargarPresentaciones(productoId) {
                                     <th>Cantidad</th>
                                     <th>Medida</th>
                                     <th>%</th>
+                                    <th>IVA</th>
+                                    <th>Costo Unitario</th>
+                                    <th>Costo Unitario IVA</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -114,11 +117,13 @@ async function cargarFormula(productoId, presentacionId) {
                 <td>${item.CANTIDAD}</td>
                 <td>${item.MEDIDA}</td>
                 <td>${item.PORCENTAJE}%</td>
+                <td>${item.IVA}%</td>
+                <td>${item.COSTO_UNITARIO}$</td>
+                <td>${item.COSTO_UNITARIO_IVA}$</td>
             </tr>
         `);
     });
 }
-
 
 function activarBuscadorAccordion() {
     const input = document.getElementById('buscadorAccordion');
@@ -138,4 +143,183 @@ function activarBuscadorAccordion() {
                 : 'none';
         });
     });
+}
+
+function abrirModalAgregarFormula() {
+    // Reset del modal
+    document.getElementById('selectProducto').value = '';
+    document.getElementById('selectPresentacion').innerHTML =
+        '<option value="">Seleccione...</option>';
+    document.getElementById('selectPresentacion').disabled = true;
+
+    document.querySelector('#tablaMaterias tbody').innerHTML = '';
+
+    // Cargar productos
+    cargarProductosSelect();
+     cargarMaterias();
+
+    // Abrir modal (Bootstrap 3)
+    $('#modalFormula').modal('show');
+}
+
+async function cargarProductosSelect() {
+    const response = await fetch('/api/productos'); // endpoint de productos
+    const productos = await response.json();
+
+    const select = document.getElementById('selectProducto');
+
+    select.innerHTML = '<option value="">Seleccione...</option>';
+
+    productos.forEach(prod => {
+        select.insertAdjacentHTML('beforeend', `
+            <option value="${prod.ID}">
+                ${prod.NOMBRE}
+            </option>
+        `);
+    });
+}
+
+document.getElementById('selectProducto')
+    .addEventListener('change', e => {
+
+        const productoId = e.target.value;
+
+        const selectPres = document.getElementById('selectPresentacion');
+
+        if (!productoId) {
+            selectPres.disabled = true;
+            selectPres.innerHTML = '<option value="">Seleccione...</option>';
+            return;
+        }
+
+        cargarPresentacionesSelect(productoId);
+    });
+
+    async function cargarPresentacionesSelect(productoId) {
+
+    const response = await fetch(
+        `/api/presentaciones`
+    );
+    const presentaciones = await response.json();
+
+    const select = document.getElementById('selectPresentacion');
+
+    select.innerHTML = '<option value="">Seleccione...</option>';
+    select.disabled = false;
+
+    presentaciones.forEach(pres => {
+        select.insertAdjacentHTML('beforeend', `
+            <option value="${pres.PRESENTACION_ID}">
+                ${pres.TAMANO_L}
+            </option>
+        `);
+    });
+}
+
+function validarPaso2() {
+    const producto = document.getElementById('selectProducto').value;
+    const presentacion = document.getElementById('selectPresentacion').value;
+
+    document.getElementById('btnAgregarMateria').disabled =
+        !producto || !presentacion;
+}
+
+function calcularIvaFila(tr) {
+
+    const costoU = parseFloat(tr.querySelector('.costo_u').value) || 0;
+    const porcentaje = parseFloat(tr.querySelector('.porcentaje').value) || 0;
+    const iva = parseFloat(tr.querySelector('.iva').value) || 0;
+
+    const costoTanque = costoU * porcentaje;
+    const costoUIva = costoU + (costoU * iva / 100);
+    const costoTanqueIva = costoTanque + (costoT * iva / 100);
+
+    tr.querySelector('.costo_tanque').value = costoTanque.toFixed(2);
+    tr.querySelector('.costo_u_iva').value = costoUIva.toFixed(2);
+    tr.querySelector('.costo_tanque_iva').value = costoTanqueIva.toFixed(2);
+}
+
+document
+    .getElementById('tablaMaterias')
+    .addEventListener('input', e => {
+
+        const tr = e.target.closest('tr');
+        if (!tr) return;
+
+        if (
+            e.target.classList.contains('costo_u') ||
+            e.target.classList.contains('porcentaje') ||
+            e.target.classList.contains('iva')
+        ) {
+            calcularIvaFila(tr);
+        }
+    });
+
+async function cargarMaterias() {
+
+    const response = await fetch('/api/materia');
+    const materias = await response.json();
+
+    const select = document.getElementById('selectMateria');
+
+    select.innerHTML = '<option value="">Seleccione materia...</option>';
+
+    materias.forEach(mat => {
+        select.insertAdjacentHTML('beforeend', `
+            <option value="${mat.ID}">
+                ${mat.NOMBRE}
+            </option>
+        `);
+    });
+}
+document.getElementById('selectMateria')
+    .addEventListener('change', e => {
+
+        document.getElementById('btnAgregarMateria').disabled =
+            !e.target.value;
+    });
+
+function agregarMateriaTabla() {
+
+    const selectMateria = document.getElementById('selectMateria');
+    const materiaId = selectMateria.value;
+    const materiaNombre = selectMateria.selectedOptions[0].text;
+
+    if (!materiaId) {
+        alert('Seleccione una materia');
+        return;
+    }
+
+    const tbody = document.querySelector('#tablaMaterias tbody');
+
+    // Evitar duplicados
+    if (tbody.querySelector(`tr[data-materia="${materiaId}"]`)) {
+        alert('Esta materia ya fue agregada');
+        return;
+    }
+
+    tbody.insertAdjacentHTML('beforeend', `
+        <tr data-materia="${materiaId}">
+            <td>${materiaNombre}</td>
+            <td><input type="text" class="form-control input-sm medida"></td>
+            <td><input type="number" class="form-control input-sm cantidad"></td>
+            <td><input type="number" class="form-control input-sm porcentaje"></td>
+            <td><input type="number" class="form-control input-sm iva"></td>
+
+            <td><input type="number" class="form-control input-sm costo_u" ></td>
+            <td><input type="number" class="form-control input-sm costo_u_iva" readonly></td>            <td><input type="number" class="form-control input-sm costo_tanque"></td>
+            <td><input type="number" class="form-control input-sm costo_tanque_iva" readonly></td>
+
+            <td>
+                <button class="btn btn-danger btn-xs"
+                        onclick="this.closest('tr').remove()">
+                    X
+                </button>
+            </td>
+        </tr>
+    `);
+
+    // reset select
+    selectMateria.value = '';
+    document.getElementById('btnAgregarMateria').disabled = true;
 }

@@ -55,6 +55,7 @@ exports.getMateriaByProducto = (req, res) => {
     mp.CANTIDAD,
     mp.MEDIDA,
     mp.PORCENTAJE,
+    mp.IVA,
     mp.COSTO_UNITARIO,
     mp.COSTO_UNITARIO_IVA
     FROM MATERIA_PRODUCTO mp

@@ -57,12 +57,18 @@ exports.getMateriaByProducto = (req, res) => {
     mp.PORCENTAJE,
     mp.IVA,
     mp.COSTO_UNITARIO,
-    mp.COSTO_UNITARIO_IVA
+    mp.COSTO_UNITARIO_IVA,
+    mp.COSTO_TANQUE,
+    mp.COSTO_TANQUE_IVA,
+    mp.ESTADO,
+    mp.FECHA_REGISTRO,
+    u.NOMBRE AS USUARIO_ULT_MOD_NOMBRE
     FROM MATERIA_PRODUCTO mp
     JOIN MATERIA m ON mp.MATERIA_ID = m.ID
+    LEFT JOIN USUARIOS u ON mp.USUARIO_ULT_MOD = u.ID
     WHERE mp.PRODUCTO_ID = ?
     AND mp.PRESENTACION_ID = ?
-     ORDER BY m.NOMBRE;
+    ORDER BY m.NOMBRE;
     `);
     const materia = stmt.all(req.params.id, req.params.presentacionId);
     res.json(materia);

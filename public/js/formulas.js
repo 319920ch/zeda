@@ -1,3 +1,15 @@
+// Obtener rol del usuario al cargar la página y normalizar
+window.currentUserRoleId = (function(){
+  try{
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+    const rawRol = usuarioActual.rol_id ?? usuarioActual.ROL_ID ?? usuarioActual.ROLE_ID ?? usuarioActual.rol ?? usuarioActual.ROLE ?? usuarioActual.ROL;
+    const rol = rawRol != null ? Number(rawRol) : null;
+    return Number.isFinite(rol) ? rol : null;
+  }catch(e){
+    return null;
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarAccordionProductos();
     activarBuscadorAccordion();
@@ -84,6 +96,12 @@ async function cargarPresentaciones(productoId) {
                                     <th>IVA</th>
                                     <th>Costo Unitario</th>
                                     <th>Costo Unitario IVA</th>
+                                    <th>Costo Unitario Tanque</th>
+                                    <th>Costo Unitario Tanque IVA</th>
+                                    <th>Estado</th>
+                                    <th>Registrado</th>
+                                    <th>Modificado por</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -109,8 +127,12 @@ async function cargarFormula(productoId, presentacionId) {
     );
 
     tbody.innerHTML = '';
+    console.log(formula);
 
     formula.forEach(item => {
+        console.log(item);
+
+        const canDelete = (window.currentUserRoleId === 1 || window.currentUserRoleId === 2);
         tbody.insertAdjacentHTML('beforeend', `
             <tr>
                 <td>${item.MATERIA_NOMBRE}</td>
@@ -120,6 +142,15 @@ async function cargarFormula(productoId, presentacionId) {
                 <td>${item.IVA}%</td>
                 <td>${item.COSTO_UNITARIO}$</td>
                 <td>${item.COSTO_UNITARIO_IVA}$</td>
+                <td>${item.COSTO_TANQUE}$</td>
+                <td>${item.COSTO_TANQUE_IVA}$</td>
+                <td>${item.ESTADO}</td>
+                <td>${item.FECHA_REGISTRO}</td>
+                <td>${item.USUARIO_ULT_MOD_NOMBRE || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm"">Editar</button>
+                    ${canDelete ? `<button class="btn btn-danger btn-sm" style="margin-left:6px;"">Eliminar</button>` : ''}
+                </td>
             </tr>
         `);
     });
@@ -209,7 +240,7 @@ document.getElementById('selectProducto')
 
     presentaciones.forEach(pres => {
         select.insertAdjacentHTML('beforeend', `
-            <option value="${pres.PRESENTACION_ID}">
+            <option value="${pres.ID}">
                 ${pres.TAMANO_L}
             </option>
         `);
@@ -266,11 +297,12 @@ async function cargarMaterias() {
     materias.forEach(mat => {
         select.insertAdjacentHTML('beforeend', `
             <option value="${mat.ID}">
-                ${mat.NOMBRE}
+                ${mat.NOMBRE}-${mat.PROVEEDOR_NOMBRE}
             </option>
         `);
     });
 }
+
 document.getElementById('selectMateria')
     .addEventListener('change', e => {
 
@@ -323,3 +355,91 @@ function agregarMateriaTabla() {
     selectMateria.value = '';
     document.getElementById('btnAgregarMateria').disabled = true;
 }
+
+function obtenerMateriasDeTabla() {
+
+    const filas = document.querySelectorAll('#tablaMaterias tbody tr');
+    const materias = [];
+
+    filas.forEach(tr => {
+
+        materias.push({
+            materia_id: tr.dataset.materia,
+
+            cantidad: parseFloat(
+                tr.querySelector('.cantidad').value
+            ) || 0,
+
+            medida: tr.querySelector('.medida').value,
+
+            porcentaje: parseFloat(
+                tr.querySelector('.porcentaje').value
+            ) || 0,
+
+            iva: parseFloat(
+                tr.querySelector('.iva').value
+            ) || 0,
+
+            costo_u: parseFloat(
+                tr.querySelector('.costo_u').value
+            ) || 0,
+
+            costo_u_iva: parseFloat(
+                tr.querySelector('.costo_u_iva').value
+            ) || 0,
+
+            costo_tanque: parseFloat(
+                tr.querySelector('.costo_tanque').value
+            ) || 0,
+
+            costo_tanque_iva: parseFloat(
+                tr.querySelector('.costo_tanque_iva').value
+            ) || 0
+        });
+
+    });
+
+    return materias;
+}
+
+document
+  .getElementById('btnGuardarFormula')
+  .addEventListener('click', () => {
+
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+    const productoId = document.getElementById('selectProducto').value;
+    const presentacionId = document.getElementById('selectPresentacion').value;
+      // 6. GENERAR TIMESTAMP
+  const now = new Date();
+  const año = now.getFullYear();
+  const mes = String(now.getMonth() + 1).padStart(2, '0');
+  const dia = String(now.getDate()).padStart(2, '0');
+  const horas = String(now.getHours()).padStart(2, '0');
+  const minutos = String(now.getMinutes()).padStart(2, '0');
+  const segundos = String(now.getSeconds()).padStart(2, '0');
+  const timestamp = `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+
+    console.log('Producto:', document.getElementById('selectProducto')?.value);
+console.log('Presentación:', document.getElementById('selectPresentacion')?.value);
+
+
+    if (!productoId || !presentacionId) {
+        alert('Seleccione producto y presentación');
+        return;
+    }
+
+    const materias = obtenerMateriasDeTabla();
+
+    if (materias.length === 0) {
+        alert('Agregue al menos una materia');
+        return;
+    }
+
+    console.log({
+        producto_id: productoId,
+        presentacion_id: presentacionId,
+        usuario_ult_mod: usuarioActual.ID,
+        fecha_registro: timestamp,
+        materias
+    });
+});
